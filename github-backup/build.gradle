@@ -1,0 +1,49 @@
+import org.ajoberstar.gradle.git.tasks.*
+import org.eclipse.egit.github.core.Repository
+import org.eclipse.egit.github.core.client.GitHubClient
+import org.eclipse.egit.github.core.service.RepositoryService
+
+buildscript {
+	repositories { mavenCentral() }
+	dependencies { classpath(
+		'org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.1', 
+		'org.ajoberstar:gradle-git:0.2.3') }
+}
+
+def userCredentials = {
+	username = user
+	password = pass
+}
+
+def client = new GitHubClient().setCredentials(user, pass)
+def service = new RepositoryService(client)
+
+service.getOrgRepositories('ignite').each { repo ->
+	
+	def repoFolder = file("repos/${repo.name}")
+	
+	if (repoFolder.exists()) {
+		task "pull-${repo.name}"(type: GitPull) {
+			group = 'pull'
+			repoPath = repoFolder.path
+			credentials userCredentials
+		}
+	} else {
+		task "clone-${repo.name}"(type: GitClone) {
+			group = 'clone'
+			uri = repo.cloneUrl
+			destinationPath = repoFolder.path
+			credentials userCredentials
+		}
+	}
+}
+
+task backup {
+	dependsOn tasks.findAll {
+		it.name.startsWith('clone') || it.name.startsWith('pull')
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '1.3'
+}
