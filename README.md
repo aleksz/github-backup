@@ -1,2 +1,1 @@
-github-backup
-=============
+./gradlew backup -Duser=XXX -Dpass=XXX
