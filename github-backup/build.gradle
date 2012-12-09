@@ -10,6 +10,8 @@ buildscript {
 		'org.ajoberstar:gradle-git:0.2.3') }
 }
 
+apply plugin: 'eclipse'
+
 def userCredentials = {
 	username = user
 	password = pass
