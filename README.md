@@ -1,1 +1,1 @@
-./gradlew backup -Duser=XXX -Dpass=XXX
+./gradlew backup -Duser=XXX -Dpass=XXX -Dorg=XXX
